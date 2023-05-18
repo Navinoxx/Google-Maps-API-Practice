@@ -23,7 +23,7 @@ const templateSidebarMarcadores= document.querySelector('.template-sidebar-marca
 const fragment = document.createDocumentFragment()
 const fragmentRecientes = document.createDocumentFragment()
 const arg = { lat: -34.0000000, lng: -64.0000000 }
-const nigthMode = {styles: [
+const nightMode = {styles: [
     { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
     { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
     { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
@@ -106,6 +106,7 @@ const nigthMode = {styles: [
 }
 
 let markers = []
+let serialized = []
 let rutas = []
 let recientes = []
 let areMarkersVisible = true
@@ -148,7 +149,7 @@ function addMarker(position) {
                     lng: position.lng()
                 },
             }
-
+            serialized.push(marker)
             markers.push(markerData)
             localStorage.setItem("markers", JSON.stringify(markers))
 
@@ -167,20 +168,21 @@ function Markers() {
 
     areMarkersVisible = !areMarkersVisible
     if (areMarkersVisible) {
-        markers.forEach(marker => {
+        serialized.forEach(marker => {
             marker.setMap(map)
         })
     } else {
-        markers.forEach(marker => {
+        serialized.forEach(marker => {
             marker.setMap(null)
         })
     }
 }
 
 function deleteMarkers() {
-    for (const marker of markers) {
+    for (const marker of serialized) {
         marker.setMap(null)
     }
+    serialized = []
     markers = []
     localStorage.removeItem('markers')
     marks.innerHTML = ""
@@ -442,18 +444,19 @@ const savedMarkers = () => {
     const storedMarkers = localStorage.getItem("markers")
     if (storedMarkers) {
         const serializedMarkers = JSON.parse(storedMarkers)
-        markers = serializedMarkers.map(serializedMarker => {
+        markers = JSON.parse(storedMarkers)
+        serialized =  serializedMarkers.map(serializedMarker => {
         const marker = new google.maps.Marker({
-            location: serializedMarker.address,
+            location: serializedMarker.location,
             position: new google.maps.LatLng(serializedMarker.position),
             map: areMarkersVisible ? map : null
         })
         return marker
         })
-    
+
         if (areMarkersVisible) {
             marks.innerHTML = ""
-            markers.map(marker => {
+            serialized.map(marker => {
                 marker.setMap(map)
                 const clone = templateSidebarMarcadores.cloneNode(true)
                 clone.querySelector("h5").textContent = marker.location
@@ -507,7 +510,7 @@ const savedMarkers = () => {
                 btn.classList.remove("btn-dark")
                 }
             })
-            map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nigthMode.styles : null})
+            map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nightMode.styles : null})
     }
 
 }
@@ -520,7 +523,7 @@ switchTheme.addEventListener("click", (e) => {
             btn.classList.remove("btn-light")
             btn.classList.add("btn-dark")
         })
-        map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nigthMode.styles : null})
+        map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nightMode.styles : null})
     }
     if(e.target.classList.contains("light")) {
         body.setAttribute("data-bs-theme", "light")
@@ -529,7 +532,7 @@ switchTheme.addEventListener("click", (e) => {
             btn.classList.add("btn-light")
             btn.classList.remove("btn-dark")
         })
-        map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nigthMode.styles : null})
+        map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nightMode.styles : null})
     }
     e.stopPropagation()
 })

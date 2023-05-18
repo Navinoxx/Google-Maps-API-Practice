@@ -1,6 +1,6 @@
-/* reset */
 @import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap');
 
+/* reset */
 :root{
     --negro         : #0b090aff;
     --blanco        : #ffffffff;
@@ -129,15 +129,4 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}
-
-
-/* light/dark mode */
-
-.rounded-fill {
-    pointer-events: stroke;
-}
-
-.switchTheme {
-
 }
