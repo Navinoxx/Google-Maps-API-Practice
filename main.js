@@ -112,8 +112,9 @@ let recientes = []
 let areMarkersVisible = true
 let map
 
-function initMap() {
-    map = new google.maps.Map(mapa, {
+async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    map = new Map(document.getElementById("map"), {
     center: arg,
     zoom: 4, 
     scaleControl: true,
@@ -515,24 +516,26 @@ const savedMarkers = () => {
 
 }
 
-switchTheme.addEventListener("click", (e) => {
-    if(e.target.classList.contains("dark")) {
-        body.setAttribute("data-bs-theme", "dark")
-        localStorage.setItem("theme", "dark")
-        botones.forEach(btn => {
-            btn.classList.remove("btn-light")
-            btn.classList.add("btn-dark")
-        })
-        map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nightMode.styles : null})
+document.getElementById('flexSwitch').addEventListener("click", (e) => {
+    const targetBtn = e.target.closest('button');
+    if (targetBtn) {
+        if (targetBtn.classList.contains("dark")) {
+            body.setAttribute("data-bs-theme", "dark");
+            localStorage.setItem("theme", "dark");
+            botones.forEach(btn => {
+                btn.classList.remove("btn-light");
+                btn.classList.add("btn-dark");
+            });
+            map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nightMode.styles : null});
+        }
+        if (targetBtn.classList.contains("light")) {
+            body.setAttribute("data-bs-theme", "light");
+            localStorage.setItem("theme", "light");
+            botones.forEach(btn => {
+                btn.classList.add("btn-light");
+                btn.classList.remove("btn-dark");
+            });
+            map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nightMode.styles : null});
+        }
     }
-    if(e.target.classList.contains("light")) {
-        body.setAttribute("data-bs-theme", "light")
-        localStorage.setItem("theme", "light")
-        botones.forEach(btn => {
-            btn.classList.add("btn-light")
-            btn.classList.remove("btn-dark")
-        })
-        map.setOptions({styles: body.getAttribute("data-bs-theme") === "dark"  ? nightMode.styles : null})
-    }
-    e.stopPropagation()
-})
+});
